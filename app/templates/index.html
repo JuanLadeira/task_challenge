@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo App</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <!-- Google Fonts for a nicer font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Using Inter font as the default */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Simple transition for todo items for smoother updates */
+        .todo-item {
+            transition: all 0.3s ease-in-out;
+        }
+        /* A little animation for when the whole list reloads */
+        #todos {
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+
+    <div class="container mx-auto max-w-2xl px-4 py-12">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800 dark:text-white">Minha lista de atividades</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">Organize seu dia, uma tarefa por vez.</p>
+        </header>
+
+        <!-- Form to add new todos -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 mb-8">
+            <!-- This form will post to your backend and the entire #todos div will be replaced with the response -->
+            <form hx-post="/todos" hx-target="#todos" hx-swap="innerHTML" class="flex items-center">
+                <input 
+                    type="text" 
+                    name="content" 
+                    required 
+                    class="flex-grow bg-transparent border-none p-4 text-lg text-gray-700 dark:text-gray-200 focus:outline-none placeholder-gray-400"
+                    placeholder="Adicionar nova tarefa..."
+                    _="on htmx:afterRequest reset() me" 
+                >
+                <button 
+                    type="submit" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md"
+                >
+                    Adicionar tarefa
+                </button>
+            </form>
+        </div>
+
+        <!-- Container for the list of todos -->
+        <!-- This div will be targeted by HTMX to swap its content -->
+        <div id="todos">
+            {% include "todos.html" %}
+        </div>
+    </div>
+
+</body>
+</html>
