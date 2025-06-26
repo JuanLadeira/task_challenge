@@ -1,0 +1,24 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+
+        <div class="container mx-auto max-w-2xl px-4 py-12">
+            <header class="text-center mb-10">
+                <h1 class="text-4xl font-bold text-gray-800 dark:text-white">Minha lista de atividades</h1>
+                <p class="text-gray-500 dark:text-gray-400 mt-2">Organize seu dia, uma tarefa por vez.</p>
+            </header>
+
+            <!-- Form to add new todos -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 mb-8">
+                <!-- This form will post to your backend and the entire #todos div will be replaced with the response -->
+                {% include "create_todo.html" %}
+            </div>
+
+            <!-- Container for the list of todos -->
+            <!-- This div will be targeted by HTMX to swap its content -->
+            <div id="todos">
+                {% include "todos.html" %}
+            </div>
+        </div>
+{% endblock content %}

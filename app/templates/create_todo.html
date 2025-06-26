@@ -1,0 +1,16 @@
+<form hx-post="/ui/todos" hx-target="#todos" hx-swap="innerHTML" class="flex items-center">
+    <input 
+        type="text" 
+        name="content" 
+        required 
+        class="flex-grow bg-transparent border-none p-4 text-lg text-gray-700 dark:text-gray-200 focus:outline-none placeholder-gray-400"
+        placeholder="Adicionar nova tarefa..."
+        _="on htmx:afterRequest reset() me" 
+    >
+    <button 
+        type="submit" 
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md"
+    >
+        Adicionar tarefa
+    </button>
+</form>

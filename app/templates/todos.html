@@ -8,7 +8,7 @@
                         type="checkbox" 
                         class="h-6 w-6 rounded-full border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                         {% if todo.completed %}checked{% endif %} 
-                        hx-put="/todos/{{ todo.id }}" 
+                        hx-put="/ui/todos/{{ todo.id }}" 
                         hx-target="#todos" 
                         hx-swap="innerHTML"
                     >
@@ -21,10 +21,10 @@
                     <!-- Delete button -->
                     <button 
                         class="text-red-500 hover:text-red-700 transition-colors duration-300" 
-                        hx-delete="/todos/{{ todo.id }}" 
+                        hx-delete="/ui/todos/{{ todo.id }}" 
                         hx-target="#todos" 
                         hx-swap="innerHTML"
-                        hx-confirm="Are you sure you want to delete this task?"
+                        hx-confirm="Você tem certeza que deseja excluir esta tarefa?"
                     >
                         <!-- SVG icon for delete button -->
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
