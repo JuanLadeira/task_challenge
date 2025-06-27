@@ -15,7 +15,7 @@ dependencies = [
     "uvicorn>=0.34.3",
 ]
 [tool.pytest.ini_options]
-addopts = " -p no:warnings -vv --cov=app --cov-report=term-missing"
+addopts = " -p no:warnings -vv --cov=app --cov-report=term-missing --cov-report=html --cov-fail-under=9'0"
 testpaths = ["app/tests", "tests"]
 pythonpath = "."
 

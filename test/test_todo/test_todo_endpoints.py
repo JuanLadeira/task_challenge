@@ -46,14 +46,11 @@ def test_ler_todas_as_tarefas_com_dados(client: TestClient, todo_factory):
     assert len(data) == 10
     assert data[0]["content"] == factory.content
 
-def test_ler_uma_tarefa_por_id(client: TestClient, session: Session):
+def test_ler_uma_tarefa_por_id(client: TestClient, todo_factory):
     """
     Testa a leitura de uma única tarefa pelo seu ID.
     """
-    tarefa_teste = Todo(content="Fazer compras", completed=True)
-    session.add(tarefa_teste)
-    session.commit()
-    
+    tarefa_teste = todo_factory(content="Fazer compras", completed=True)
     response = client.get(f"/api/todos/{tarefa_teste.id}")
     
     data = response.json()
@@ -69,14 +66,11 @@ def test_ler_uma_tarefa_nao_encontrada(client: TestClient):
     
     assert response.status_code == 404
 
-def test_atualizar_tarefa(client: TestClient, session: Session):
+def test_atualizar_tarefa(client: TestClient, todo_factory):
     """
     Testa a atualização de uma tarefa existente através do endpoint PUT.
     """
-    tarefa_teste = Todo(content="Ler um livro", completed=False)
-    session.add(tarefa_teste)
-    session.commit()
-    
+    tarefa_teste = todo_factory(content="Ler um livro", completed=False)
     dados_atualizacao = {"content": "Ler um livro de ficção", "completed": True}
     response = client.put(f"/api/todos/{tarefa_teste.id}", json=dados_atualizacao)
     
@@ -85,14 +79,12 @@ def test_atualizar_tarefa(client: TestClient, session: Session):
     assert data["content"] == dados_atualizacao["content"]
     assert data["completed"] is True
 
-def test_eliminar_tarefa(client: TestClient, session: Session):
+def test_eliminar_tarefa(client: TestClient, todo_factory, session: Session):
     """
     Testa a eliminação de uma tarefa.
     """
-    tarefa_teste = Todo(content="Eliminar esta tarefa", completed=False)
-    session.add(tarefa_teste)
-    session.commit()
-    
+    tarefa_teste = todo_factory(content="Limpar a casa", completed=False)
+
     # Faz a requisição DELETE
     response = client.delete(f"/api/todos/{tarefa_teste.id}")
     
