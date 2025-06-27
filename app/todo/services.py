@@ -4,7 +4,7 @@ from typing import List, Annotated
 
 from fastapi import Depends
 from app.db import DBSession
-from app.models import Todo
+from app.todo.models import Todo
 
 class TodoService:
     """
@@ -71,3 +71,10 @@ def get_todo_service(
 
 
 TodoServiceDep = Annotated[TodoService, Depends(get_todo_service)]
+
+def create_todo_example(service:TodoServiceDep) -> Todo:
+    """
+    Função de exemplo para criar uma tarefa.
+    Esta função pode ser usada para testes ou como um exemplo de uso do serviço.
+    """
+    return service.create_todo(content="Exemplo de tarefa")

@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Request, Form, Path, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from app.services import TodoServiceDep
+from app.todo.services import TodoServiceDep
 from typing import Annotated
 
-from app.models import Todo
+from app.todo.models import Todo
 
 # Configuração do router e dos templates
 router = APIRouter(

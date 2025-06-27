@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Annotated
 
 from app.db import DBSession
-from app.models import Todo
-from app.services import TodoServiceDep
+from app.todo.models import Todo
+from app.todo.services import TodoServiceDep
 from app.schemas import TodoCreate, TodoUpdate
 
 
