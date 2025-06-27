@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, Form, Path, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from app.services import TodoServiceDep
 from sqlmodel import select
 from typing import Annotated
 
@@ -15,7 +16,7 @@ router = APIRouter(
 templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/", response_class=HTMLResponse, summary="Busca a página HTML principal da aplicação")
-def read_root(request: Request, session: DBSession):
+def read_root(request: Request, service: TodoServiceDep):
     """
     Renderiza e retorna a página web completa (`base.html`).
 
@@ -24,7 +25,7 @@ def read_root(request: Request, session: DBSession):
     As interações subsequentes (criar, atualizar, deletar) são feitas por outros
     endpoints que retornam fragmentos de HTML (parciais).
     """
-    todos = session.exec(select(Todo).order_by(Todo.id)).all()
+    todos = service.get_all_todos()
     return templates.TemplateResponse("base.html", {"request": request, "todos": todos})
 
 @router.post(
@@ -35,7 +36,7 @@ def read_root(request: Request, session: DBSession):
 )
 def create_todo(
     request: Request, 
-    session: DBSession,
+    service: TodoServiceDep,
     content: Annotated[str, Form(description="Conteúdo da tarefa a ser criada. Enviado como 'form data'.")]
 ):
     """
@@ -46,18 +47,17 @@ def create_todo(
     (`todos.html`) contendo toda a lista de tarefas atualizada. A interface (HTMX)
     substitui o conteúdo do elemento `#todos` por esta resposta.
     """
-    todo = Todo(content=content)
-    session.add(todo)
-    session.commit()
-    session.refresh(todo)
+    todo = service.create_todo(content=content)
+    if not todo:
+        return HTMLResponse(status_code=status.HTTP_400_BAD_REQUEST, content="Erro ao criar a tarefa.")
     
-    todos = session.exec(select(Todo).order_by(Todo.id)).all()
+    todos = service.get_all_todos()
     return templates.TemplateResponse("todos.html", {"request": request, "todos": todos})
 
 @router.put("/ui/todos/{todo_id}", response_class=HTMLResponse, summary="Atualiza o estado de uma tarefa")
 def update_todo(
     request: Request, 
-    session: DBSession,
+    service: TodoServiceDep,
     todo_id: Annotated[int, Path(description="O ID da tarefa que terá seu estado 'completed' alternado.")]
 ):
     """
@@ -67,20 +67,17 @@ def update_todo(
     Após atualizar o estado da tarefa, ele retorna um **fragmento HTML** (`todos.html`)
     com a lista de tarefas atualizada, para ser usado pelo HTMX na substituição do conteúdo.
     """
-    todo = session.get(Todo, todo_id)
-    if todo:
-        todo.completed = not todo.completed
-        session.add(todo)
-        session.commit()
-        session.refresh(todo)
+    todo = service.update_todo_status(todo_id)
+    if not todo:
+        return HTMLResponse(status_code=status.HTTP_404_NOT_FOUND, content="Tarefa não encontrada.")
     
-    todos = session.exec(select(Todo).order_by(Todo.id)).all()
+    todos = service.get_all_todos()
     return templates.TemplateResponse("todos.html", {"request": request, "todos": todos})
 
 @router.delete("/ui/todos/{todo_id}", response_class=HTMLResponse, summary="Deleta uma tarefa específica")
 def delete_todo(
     request: Request, 
-    session: DBSession,
+    service: TodoServiceDep,
     todo_id: Annotated[int, Path(description="O ID da tarefa a ser deletada.")]
 ):
     """
@@ -90,10 +87,11 @@ def delete_todo(
     **fragmento HTML** (`todos.html`) com a lista de tarefas restante. Este
     fragmento é então usado pelo cliente (HTMX) para atualizar a interface.
     """
-    todo = session.get(Todo, todo_id)
-    if todo:
-        session.delete(todo)
-        session.commit()
+    todo = service.session.get(Todo, todo_id)
+    if not todo:
+        return HTMLResponse(status_code=status.HTTP_404_NOT_FOUND, content="Tarefa não encontrada.")
+        
+    service.delete_todo_by_id(todo_id)
     
-    todos = session.exec(select(Todo).order_by(Todo.id)).all()
+    todos = service.get_all_todos()
     return templates.TemplateResponse("todos.html", {"request": request, "todos": todos})
