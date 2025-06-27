@@ -2,10 +2,8 @@ from fastapi import APIRouter, Request, Form, Path, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from app.services import TodoServiceDep
-from sqlmodel import select
 from typing import Annotated
 
-from app.db import DBSession
 from app.models import Todo
 
 # Configuração do router e dos templates
