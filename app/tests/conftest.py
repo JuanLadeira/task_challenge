@@ -3,6 +3,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from app.main import app
 from app.db import get_session
+from app.auth.security import get_password_hash
 from app.tests.factories.todo import TodoFactory
 from app.tests.factories.users import UserFactory
 from testcontainers.postgres import PostgresContainer
@@ -45,3 +46,19 @@ def user_factory(session) -> type[UserFactory]:
     UserFactory._meta.sqlalchemy_session = session
     
     return UserFactory
+
+
+@pytest.fixture
+def user(user_factory):
+    senha = "teste"
+    user = user_factory(username="teste", password=get_password_hash(senha))
+    return user
+
+
+@pytest.fixture
+def token(client, user):
+    response = client.post(
+        '/auth/login',
+        data={'username': user.username, 'password': "teste"}
+    )
+    return response.json()['access_token']

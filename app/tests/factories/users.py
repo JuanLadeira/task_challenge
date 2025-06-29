@@ -1,7 +1,7 @@
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 from app.user.models import User
-from app.db import Session, DBSession  # Importe sua sessão de banco de dados aqui
+from app.db import DBSession  # Importe sua sessão de banco de dados aqui
 
 
 class UserFactory(SQLAlchemyModelFactory):
@@ -14,8 +14,6 @@ class UserFactory(SQLAlchemyModelFactory):
         model = User
         sqlalchemy_session = None
         sqlalchemy_session_persistence = "flush"
-
-    id = factory.Sequence(lambda n: n + 1)
     
     username = factory.Faker("user_name")
     
@@ -23,8 +21,6 @@ class UserFactory(SQLAlchemyModelFactory):
     
     password = "test_password123"
 
-
-# --- Exemplo de Uso (para referência) ---
 
 def create_user_for_testing(session: DBSession, username=None) -> User:
     """

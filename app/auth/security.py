@@ -1,16 +1,10 @@
 
 from datetime import datetime, timedelta
-from http import HTTPStatus
 from zoneinfo import ZoneInfo
-
-from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from jwt import DecodeError, ExpiredSignatureError, decode, encode
+from jwt import encode
 from pwdlib import PasswordHash
-from sqlalchemy import select
 
-from app.db import DBSession
-from app.user.models import User
 from app.settings import Settings
 
 settings = Settings()
@@ -45,37 +39,3 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify if the provided plain password matches the hashed password."""
     return pwd_context.verify(plain_password, hashed_password)
 
-
-def get_current_user(
-    session: DBSession,
-    token: str = Depends(oauth2_scheme),
-):
-    credentials_exception = HTTPException(
-        status_code=HTTPStatus.UNAUTHORIZED,
-        detail='Could not validate credentials',
-        headers={'WWW-Authenticate': 'Bearer'},
-    )
-
-    try:
-        payload = decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
-        )
-        subject_email = payload.get('sub')
-
-        if not subject_email:
-            raise credentials_exception
-
-    except DecodeError:
-        raise credentials_exception
-
-    except ExpiredSignatureError:
-        raise credentials_exception
-
-    user = session.scalar(
-        select(User).where(User.email == subject_email)
-    )
-
-    if not user:
-        raise credentials_exception
-
-    return user

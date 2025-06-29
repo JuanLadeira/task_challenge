@@ -7,19 +7,25 @@ from sqlmodel import Session
 # Ex: em conftest.py
 
 @pytest.mark.users
-def test_create_user_successfully(client: TestClient):
+def test_create_user_successfully(client: TestClient, token, user_factory):
     """
     Testa a criação bem-sucedida de um novo usuário.
     """
     # Dados para o novo usuário
-    user_data = {
-        "username": "testuser",
-        "email": "test@example.com",
-        "password": "strongpassword123",
+    user_build = user_factory.build()
+
+    user_data ={
+        "username": user_build.username,
+        "email": user_build.email,
+        "password": user_build.password
     }
     
     # Faz a requisição POST para o endpoint de criação
-    response = client.post("/users/", json=user_data)
+    response = client.post(
+        "/users/", 
+        json=user_data,
+        headers={'Authorization': f'Bearer {token}'},
+        )
     
     # Verifica o status code e o corpo da resposta
     assert response.status_code == 201
@@ -30,7 +36,11 @@ def test_create_user_successfully(client: TestClient):
     assert "password" not in created_user # Garante que a senha não foi retornada
 
 @pytest.mark.users
-def test_create_user_with_existing_username(client: TestClient, user_factory):
+def test_create_user_with_existing_username(
+    client: TestClient,
+    user_factory,
+    token,
+    ):
     """
     Testa a falha ao tentar criar um usuário com um nome de usuário que já existe.
     """
@@ -43,7 +53,11 @@ def test_create_user_with_existing_username(client: TestClient, user_factory):
         "email": "new@example.com",
         "password": "password123",
     }
-    response = client.post("/users/", json=duplicate_user_data)
+    response = client.post(
+        "/users/", 
+        json=duplicate_user_data,
+        headers={'Authorization': f'Bearer {token}'},
+        )
     
     # 3. Verifica se a API retornou o erro esperado (400 Bad Request)
     assert response.status_code == 400

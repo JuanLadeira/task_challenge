@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, status
 
 from app.user.schemas import UserCreate, UserPublic, UserUpdate
 from app.user.services import UserServiceDep
+from app.auth.current_user import CurrentUser
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -14,7 +15,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
     status_code=status.HTTP_201_CREATED,
     summary="Criar um novo usuário",
 )
-def create_user(user_data: UserCreate, service: UserServiceDep):
+def create_user(user_data: UserCreate, service: UserServiceDep, current_user:CurrentUser):
     """
     Cria um novo usuário no sistema.
 
@@ -74,7 +75,10 @@ def get_user_by_id(user_id: int, service: UserServiceDep):
     response_model=UserPublic,
     summary="Atualizar um usuário"
 )
-def update_user(user_id: int, user_data: UserUpdate, service: UserServiceDep):
+def update_user(
+    user_data: UserUpdate, 
+    current_user: CurrentUser,
+    ):
     """
     Atualiza os dados de um usuário existente.
 
@@ -82,12 +86,10 @@ def update_user(user_id: int, user_data: UserUpdate, service: UserServiceDep):
     - **Retorna**: Os dados públicos do usuário atualizado.
     - **Levanta exceção 404**: Se o usuário não for encontrado.
     """
-    updated_user = service.update_user(user_id=user_id, user_data=user_data)
-    if not updated_user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado."
-        )
-    return updated_user
+    current_user.email = user_data.email
+    current_user.username = user_data.username
+    current_user.password = user_data.password
+    return current_user
 
 
 @router.delete(

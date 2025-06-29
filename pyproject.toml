@@ -24,11 +24,13 @@ testpaths = ["/app/tests"]
 pythonpath = "."
 markers = [
     "users: testes de users",
-    "todos: testes de todos"
+    "todos: testes de todos",
+    "auth: testes de autenticação",
 ]
 
 [dependency-groups]
 dev = [
+    "freezegun>=1.5.2",
     "pytest>=8.4.1",
     "pytest-asyncio>=1.0.0",
     "pytest-cov>=6.2.1",

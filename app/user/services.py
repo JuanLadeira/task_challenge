@@ -103,7 +103,8 @@ class UserService:
 
         # Atualiza os campos do objeto do banco de dados.
         for key, value in update_data.items():
-            setattr(db_user, key, value)
+            if value:
+                setattr(db_user, key, value)
 
         self.session.add(db_user)
         self.session.commit()
