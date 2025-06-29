@@ -6,6 +6,8 @@ WORKDIR /app
 
 COPY . .
 
+ENV PATH="/app/.venv/bin:$PATH"
+
 RUN uv sync --locked
 
 EXPOSE 8000

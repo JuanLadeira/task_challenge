@@ -1,10 +1,13 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Request, Form, Path, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from app.todo.services import TodoServiceDep
-from typing import Annotated
 
+from app.todo.services import TodoServiceDep
 from app.todo.models import Todo
+from app.todo.schemas import TodoUpdate
+
 
 # Configuração do router e dos templates
 router = APIRouter(
@@ -78,6 +81,7 @@ def update_todo(
         int,
         Path(description="O ID da tarefa que terá seu estado 'completed' alternado."),
     ],
+    todo_data: TodoUpdate = None, 
 ):
     """
     Alterna o estado de 'concluída' para uma tarefa específica.
@@ -86,7 +90,7 @@ def update_todo(
     Após atualizar o estado da tarefa, ele retorna um **fragmento HTML** (`todos.html`)
     com a lista de tarefas atualizada, para ser usado pelo HTMX na substituição do conteúdo.
     """
-    todo = service.update_todo_status(todo_id)
+    todo = service.update_todo(todo_id, todo_data)
     if not todo:
         return HTMLResponse(
             status_code=status.HTTP_404_NOT_FOUND, content="Tarefa não encontrada."

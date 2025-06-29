@@ -3,7 +3,7 @@ from typing import List
 
 from app.todo.models import Todo
 from app.todo.services import TodoServiceDep
-from app.schemas import TodoCreate, TodoUpdate
+from app.todo.schemas import TodoCreate, TodoUpdate
 
 
 # --- Configuração do Router para a API REST ---
@@ -71,19 +71,12 @@ def update_existing_todo(
     - **Corpo da Requisição**: Um JSON com os campos a serem atualizados (`content` e/ou `completed`).
     - **Retorna**: O objeto da tarefa atualizada.
     """
-    db_todo = service.session.get(Todo, todo_id)
-    if db_todo is None:
+    updated_todo = service.update_todo(todo_id, todo_data)
+
+    if updated_todo is None:
         raise HTTPException(status_code=404, detail="Tarefa não encontrada")
 
-    # Pega os dados do Pydantic model e atualiza o objeto do SQLModel
-    update_data = todo_data.model_dump(exclude_unset=True)
-    for key, value in update_data.items():
-        setattr(db_todo, key, value)
-
-    service.session.add(db_todo)
-    service.session.commit()
-    service.session.refresh(db_todo)
-    return db_todo
+    return updated_todo
 
 
 @router.delete(

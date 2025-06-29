@@ -4,6 +4,7 @@ from sqlmodel import Session, SQLModel, create_engine
 from app.main import app
 from app.db import get_session
 from app.tests.factories.todo import TodoFactory
+from app.tests.factories.users import UserFactory
 from testcontainers.postgres import PostgresContainer
 
 @pytest.fixture
@@ -30,10 +31,17 @@ def client(session):
 
 
 @pytest.fixture
-def todo_factory(session: Session) -> type[TodoFactory]:
+def todo_factory(session) -> type[TodoFactory]:
     """
     Fixture que fornece a TodoFactory já configurada com a sessão de teste.
     """
     # Associa a fábrica à sessão de teste atual
     TodoFactory._meta.sqlalchemy_session = session
     return TodoFactory
+
+
+@pytest.fixture
+def user_factory(session) -> type[UserFactory]:
+    UserFactory._meta.sqlalchemy_session = session
+    
+    return UserFactory

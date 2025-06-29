@@ -4,13 +4,14 @@ Este guia fornece instruções sobre como se conectar ao contêiner do banco de 
 
 ## 1. Conecte-se ao Contêiner do Banco de Dados
 
-Para obter um shell `psql` interativo dentro do contêiner `db` em execução, execute o seguinte comando no seu terminal a partir da raiz do projeto:
+Para obter um shell `psql` interativo dentro do contêiner `db_dev` em execução, execute o seguinte comando no seu terminal a partir da raiz do projeto:
 
 ```bash
-docker exec -it db psql -U user -d mydatabase
+docker exec -it b_dev psql -U user -d mydatabase
 ```
 
--   `docker exec -it db`: Esta parte do comando instrui o Docker a executar um comando dentro do contêiner `db` em modo interativo (`-it`).
+-   `docker exec 
+-it db_dev`: Esta parte do comando instrui o Docker a executar um comando dentro do contêiner `db_dev` em modo interativo (`-it`).
 -   `psql -U user -d mydatabase`: Este é o comando que roda dentro do contêiner. Ele inicia o cliente `psql`, conectando-se como o usuário (`-U`) `user` ao banco de dados (`-d`) chamado `mydatabase`.
 
 ## 2. Listar Tabelas
