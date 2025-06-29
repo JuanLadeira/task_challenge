@@ -19,7 +19,7 @@ dependencies = [
     "psycopg2-binary>=2.9.10",
 ]
 [tool.pytest.ini_options]
-testpaths = ["/app/tests", "tests"]
+testpaths = ["/app/tests"]
 pythonpath = "."
 
 [dependency-groups]
@@ -40,8 +40,8 @@ down = "docker compose -f docker-compose.yml down"
 logs = "docker compose -f docker-compose.yml logs -f"
 test = "docker compose -f docker-compose.yml run --rm app /app/.venv/bin/python -m pytest"
 test-coverage = "pytest --cov=app --cov-report=term-missing --cov-report=html --cov-fail-under=90"
-test-watch = "pytest --cov=app --cov-report=term-missing --cov-report=html --cov-fail-under=90 --lf"
-test-watch-coverage = "pytest --cov=app --cov-report=term-missing --cov-report=html --cov-fail-under=90 --lf --watch"
-lint = "ruff check app tests"
-format = "ruff format app tests"
-format-check = "ruff check --fix app tests"
+lint = "ruff check app"
+format = 'ruff format'
+format-check = "ruff check --fix app"
+pre_format = 'ruff check --fix'
+pre_test = 'task lint'

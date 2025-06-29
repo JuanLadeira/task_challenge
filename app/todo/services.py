@@ -1,4 +1,3 @@
-
 from sqlmodel import select
 from typing import List, Annotated
 
@@ -6,15 +5,17 @@ from fastapi import Depends
 from app.db import DBSession
 from app.todo.models import Todo
 
+
 class TodoService:
     """
     Esta classe encapsula a lógica de negócio para manipulação de tarefas.
     Todas as interações com o banco de dados relacionadas a tarefas devem passar por aqui.
     """
+
     def __init__(self, session: DBSession):
         """
         Inicializa o serviço com uma sessão de banco de dados.
-        
+
         Args:
             session: Uma sessão do SQLModel para interagir com o banco de dados.
         """
@@ -64,7 +65,7 @@ def get_todo_service(
     session: DBSession,
 ) -> TodoService:
     """
-    Cria e retorna uma instância do TodoService com a sessão 
+    Cria e retorna uma instância do TodoService com a sessão
     de banco de dados injetada.
     """
     return TodoService(session)
@@ -72,7 +73,8 @@ def get_todo_service(
 
 TodoServiceDep = Annotated[TodoService, Depends(get_todo_service)]
 
-def create_todo_example(service:TodoServiceDep) -> Todo:
+
+def create_todo_example(service: TodoServiceDep) -> Todo:
     """
     Função de exemplo para criar uma tarefa.
     Esta função pode ser usada para testes ou como um exemplo de uso do serviço.

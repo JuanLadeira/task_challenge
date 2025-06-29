@@ -1,4 +1,3 @@
-
 from sqlalchemy import event
 from functools import wraps
 from app.logger import logger
@@ -7,21 +6,24 @@ from app.logger import logger
 _listeners = []
 
 
-
 def listens_for(model, identifier):
     """
-    Um decorador que regista uma função como um listener para um evento 
+    Um decorador que regista uma função como um listener para um evento
     do SQLAlchemy, adicionando-a a um registo para ser processada mais tarde.
     """
+
     def decorator(func):
         # Adiciona a informação do listener à nossa lista de registo.
         _listeners.append((model, identifier, func))
-        
+
         @wraps(func)
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
+
         return wrapper
+
     return decorator
+
 
 def register_sqlalchemy_listeners():
     """
@@ -30,8 +32,11 @@ def register_sqlalchemy_listeners():
     logger.info("A registar os listeners do SQLAlchemy...")
     for model, identifier, func in _listeners:
         event.listen(model, identifier, func)
-        logger.info(f"-> Listener '{func.__name__}' registado para o evento '{identifier}' no modelo '{model.__name__}'")
+        logger.info(
+            f"-> Listener '{func.__name__}' registado para o evento '{identifier}' no modelo '{model.__name__}'"
+        )
     logger.info("Registo de listeners concluído.")
+
 
 def remove_sqlalchemy_listeners():
     """

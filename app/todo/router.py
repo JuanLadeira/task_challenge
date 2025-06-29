@@ -1,7 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List, Annotated
+from fastapi import APIRouter, HTTPException, status
+from typing import List
 
-from app.db import DBSession
 from app.todo.models import Todo
 from app.todo.services import TodoServiceDep
 from app.schemas import TodoCreate, TodoUpdate
@@ -12,15 +11,21 @@ from app.schemas import TodoCreate, TodoUpdate
 router = APIRouter(
     prefix="/api/todos",
     tags=["API REST de Tarefas"],
-    responses={404: {"description": "Não encontrado"}}
+    responses={404: {"description": "Não encontrado"}},
 )
 
 # --- Endpoints da API REST ---
 
-@router.post("/", response_model=Todo, status_code=status.HTTP_201_CREATED, summary="Criar uma nova tarefa")
+
+@router.post(
+    "/",
+    response_model=Todo,
+    status_code=status.HTTP_201_CREATED,
+    summary="Criar uma nova tarefa",
+)
 def create_new_todo(
     todo_data: TodoCreate,
-    service: TodoServiceDep  # Usando o alias para a dependência
+    service: TodoServiceDep,  # Usando o alias para a dependência
 ):
     """
     Cria uma nova tarefa e a armazena no banco de dados.
@@ -29,17 +34,19 @@ def create_new_todo(
     """
     return service.create_todo(content=todo_data.content)
 
+
 @router.get("/", response_model=List[Todo], summary="Listar todas as tarefas")
-def get_all_todos(service: TodoServiceDep): # Usando o alias para a dependência
+def get_all_todos(service: TodoServiceDep):  # Usando o alias para a dependência
     """
     Busca e retorna uma lista de todas as tarefas existentes.
     """
     return service.get_all_todos()
 
+
 @router.get("/{todo_id}", response_model=Todo, summary="Buscar uma tarefa por ID")
 def get_todo_by_id(
     todo_id: int,
-    service: TodoServiceDep # Usando o alias para a dependência
+    service: TodoServiceDep,  # Usando o alias para a dependência
 ):
     """
     Busca e retorna uma única tarefa pelo seu ID.
@@ -52,11 +59,12 @@ def get_todo_by_id(
         raise HTTPException(status_code=404, detail="Tarefa não encontrada")
     return db_todo
 
+
 @router.put("/{todo_id}", response_model=Todo, summary="Atualizar uma tarefa")
 def update_existing_todo(
     todo_id: int,
     todo_data: TodoUpdate,
-    service: TodoServiceDep # Usando o alias para a dependência
+    service: TodoServiceDep,  # Usando o alias para a dependência
 ):
     """
     Atualiza uma tarefa existente.
@@ -71,16 +79,19 @@ def update_existing_todo(
     update_data = todo_data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(db_todo, key, value)
-    
+
     service.session.add(db_todo)
     service.session.commit()
     service.session.refresh(db_todo)
     return db_todo
 
-@router.delete("/{todo_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Deletar uma tarefa")
+
+@router.delete(
+    "/{todo_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Deletar uma tarefa"
+)
 def delete_existing_todo(
     todo_id: int,
-    service: TodoServiceDep # Usando o alias para a dependência
+    service: TodoServiceDep,  # Usando o alias para a dependência
 ):
     """
     Deleta uma tarefa específica pelo seu ID.

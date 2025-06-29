@@ -1,19 +1,16 @@
-
 from app.logger import logger
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
-from app.db import create_db_and_tables
 from app.todo import ui
 from app.todo import router
-import os
-
 
 
 ## Subscribers
 import app.todo.subscribers
 
 from app.events import register_sqlalchemy_listeners, remove_sqlalchemy_listeners
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -27,7 +24,6 @@ async def lifespan(app: FastAPI):
     logger.info("Encerrando a aplicação FastAPI...")
     logger.info("Removendo listeners do SQLAlchemy...")
     remove_sqlalchemy_listeners()
-
 
 
 app = FastAPI(lifespan=lifespan)
