@@ -7,7 +7,11 @@ from sqlmodel import Session
 # Ex: em conftest.py
 
 @pytest.mark.users
-def test_create_user_successfully(client: TestClient, token, user_factory):
+def test_create_user_successfully(
+    client: TestClient, 
+    token, 
+    user_factory
+    ):
     """
     Testa a criação bem-sucedida de um novo usuário.
     """
@@ -64,31 +68,45 @@ def test_create_user_with_existing_username(
     assert "nome de usuário já está em uso" in response.json()["detail"]
 
 @pytest.mark.users
-def test_get_all_users(client: TestClient, user_factory):
+def test_get_all_users(
+    client: TestClient, 
+    user_factory,
+    token,
+    ):
     """
     Testa a listagem de todos os usuários.
     """
     # Cria 3 usuários no banco de dados para o teste
     user_factory.create_batch(size=3)
     
-    response = client.get("/users/")
+    response = client.get(
+        "/users/",
+        headers={'Authorization': f'Bearer {token}'},
+        )
     
     assert response.status_code == 200
     users_list = response.json()
-    assert len(users_list) == 3
+    assert len(users_list) == 4
     # Verifica se os campos estão corretos no primeiro usuário da lista
     assert "username" in users_list[0]
     assert "password" not in users_list[0]
 
 @pytest.mark.users
-def test_get_user_by_id(client: TestClient, user_factory):
+def test_get_user_by_id(
+    client: TestClient, 
+    user_factory,
+    token
+    ):
     """
     Testa a busca de um usuário específico pelo ID.
     """
     # Cria um usuário para ser buscado
     user = user_factory.create()
-    
-    response = client.get(f"/users/{user.id}")
+
+    response = client.get(
+        f"/users/{user.id}",
+        headers={'Authorization': f'Bearer {token}'},
+        )
     
     assert response.status_code == 200
     found_user = response.json()
@@ -96,35 +114,58 @@ def test_get_user_by_id(client: TestClient, user_factory):
     assert found_user["username"] == user.username
 
 @pytest.mark.users
-def test_get_user_by_id_not_found(client: TestClient, session: Session):
+def test_get_user_by_id_not_found(
+    client: TestClient, 
+    token
+    ):
     """
     Testa a busca por um usuário com um ID que não existe.
     """
-    response = client.get("/users/999") # Um ID que provavelmente não existe
+    response = client.get(
+        "/users/999",
+        headers={'Authorization': f'Bearer {token}'},
+
+        ) # Um ID que provavelmente não existe
     
     assert response.status_code == 404
     assert "Usuário não encontrado" in response.json()["detail"]
 
-def test_update_user(client: TestClient, user_factory):
+def test_update_user(
+        client: TestClient, 
+        user_factory,
+        token
+        ):
     """
     Testa a atualização bem-sucedida de um usuário.
     """
     user = user_factory()
     update_data = {"username": "new_username"}
     
-    response = client.put(f"/users/{user.id}", json=update_data)
+    response = client.put(
+        f"/users/{user.id}", 
+        json=update_data,
+        headers={'Authorization': f'Bearer {token}'},
+        )
     
     assert response.status_code == 200
     updated_user = response.json()
     assert updated_user["username"] == "new_username"
     assert updated_user["email"] == user.email # O e-mail não deve ter mudado
 
-def test_update_user_not_found(client: TestClient, session: Session):
+def test_update_user_not_found(
+        client: TestClient, 
+        session: Session,
+        token,
+        ):
     """
     Testa a atualização de um usuário que não existe.
     """
     update_data = {"username": "new_username"}
-    response = client.put("/users/999", json=update_data)
+    response = client.put(
+        "/users/999", 
+        json=update_data,
+
+        )
     
     assert response.status_code == 404
 

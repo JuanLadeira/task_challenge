@@ -15,7 +15,11 @@ router = APIRouter(prefix="/users", tags=["Users"])
     status_code=status.HTTP_201_CREATED,
     summary="Criar um novo usuário",
 )
-def create_user(user_data: UserCreate, service: UserServiceDep, current_user:CurrentUser):
+def create_user(
+    user_data: UserCreate, 
+    service: UserServiceDep, 
+    current_user:CurrentUser
+    ):
     """
     Cria um novo usuário no sistema.
 
@@ -41,7 +45,10 @@ def create_user(user_data: UserCreate, service: UserServiceDep, current_user:Cur
     response_model=List[UserPublic],
     summary="Listar todos os usuários"
 )
-def get_all_users(service: UserServiceDep):
+def get_all_users(
+    service: UserServiceDep,
+    current_user:CurrentUser
+    ):
     """
     Retorna uma lista de todos os usuários cadastrados no sistema.
     """
@@ -53,7 +60,11 @@ def get_all_users(service: UserServiceDep):
     response_model=UserPublic,
     summary="Buscar um usuário pelo ID"
 )
-def get_user_by_id(user_id: int, service: UserServiceDep):
+def get_user_by_id(
+    user_id: int, 
+    service: UserServiceDep,
+    current_user:CurrentUser
+    ):
     """
     Busca e retorna os dados de um usuário específico pelo seu ID.
 
@@ -97,7 +108,11 @@ def update_user(
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Deletar um usuário"
 )
-def delete_user(user_id: int, service: UserServiceDep):
+def delete_user(
+    user_id: int, 
+    service: UserServiceDep,
+    current_user:CurrentUser
+    ):
     """
     Deleta um usuário do sistema pelo seu ID.
 
