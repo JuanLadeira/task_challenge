@@ -2,8 +2,10 @@ from app.logger import logger
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
-from app.todo import ui
-from app.todo import router
+from app.todo import ui as ui_router
+from app.todo import router as todo_router
+from app.auth import router as auth_router
+from app.user import router as user_router
 
 
 ## Subscribers
@@ -30,5 +32,7 @@ app = FastAPI(lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-app.include_router(ui.router)
-app.include_router(router.router)
+app.include_router(auth_router.router)
+app.include_router(ui_router.router)
+app.include_router(user_router.router)
+app.include_router(todo_router.router)

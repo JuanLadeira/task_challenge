@@ -10,6 +10,7 @@ compose/
 # Python
 .python-version
 .venv/
+.venv
 __pycache__/
 *.pyc
 *.pyo

@@ -3,7 +3,8 @@ from typing import List
 
 from app.todo.models import Todo
 from app.todo.services import TodoServiceDep
-from app.schemas import TodoCreate, TodoUpdate
+from app.todo.schemas import TodoCreate, TodoUpdate
+from app.auth.current_user import CurrentUser
 
 
 # --- Configuração do Router para a API REST ---
@@ -25,22 +26,26 @@ router = APIRouter(
 )
 def create_new_todo(
     todo_data: TodoCreate,
-    service: TodoServiceDep,  # Usando o alias para a dependência
+    service: TodoServiceDep,
+    current_user: CurrentUser
 ):
     """
     Cria uma nova tarefa e a armazena no banco de dados.
     - **Corpo da Requisição**: Um JSON com o campo `content`.
     - **Retorna**: O objeto completo da tarefa criada.
     """
-    return service.create_todo(content=todo_data.content)
+    return service.create_todo(content=todo_data.content, user_id=current_user.id)
 
 
 @router.get("/", response_model=List[Todo], summary="Listar todas as tarefas")
-def get_all_todos(service: TodoServiceDep):  # Usando o alias para a dependência
+def get_all_todos(
+    service: TodoServiceDep,
+    current_user: CurrentUser
+    ):  # Usando o alias para a dependência
     """
     Busca e retorna uma lista de todas as tarefas existentes.
     """
-    return service.get_all_todos()
+    return service.get_all_todos(user_id = current_user.id)
 
 
 @router.get("/{todo_id}", response_model=Todo, summary="Buscar uma tarefa por ID")
@@ -71,19 +76,12 @@ def update_existing_todo(
     - **Corpo da Requisição**: Um JSON com os campos a serem atualizados (`content` e/ou `completed`).
     - **Retorna**: O objeto da tarefa atualizada.
     """
-    db_todo = service.session.get(Todo, todo_id)
-    if db_todo is None:
+    updated_todo = service.update_todo(todo_id, todo_data)
+
+    if updated_todo is None:
         raise HTTPException(status_code=404, detail="Tarefa não encontrada")
 
-    # Pega os dados do Pydantic model e atualiza o objeto do SQLModel
-    update_data = todo_data.model_dump(exclude_unset=True)
-    for key, value in update_data.items():
-        setattr(db_todo, key, value)
-
-    service.session.add(db_todo)
-    service.session.commit()
-    service.session.refresh(db_todo)
-    return db_todo
+    return updated_todo
 
 
 @router.delete(
