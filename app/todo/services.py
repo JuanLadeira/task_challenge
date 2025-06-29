@@ -22,14 +22,14 @@ class TodoService:
         """
         self.session = session
 
-    def get_all_todos(self) -> List[Todo]:
+    def get_all_todos(self, user_id) -> List[Todo]:
         """Busca todas as tarefas, ordenadas por ID."""
-        todos = self.session.exec(select(Todo).order_by(Todo.id)).all()
+        todos = self.session.exec(select(Todo).where(Todo.user_id==user_id).order_by(Todo.id)).all()
         return todos
 
-    def create_todo(self, content: str) -> Todo:
+    def create_todo(self, content: str, user_id) -> Todo:
         """Cria uma nova tarefa."""
-        todo = Todo(content=content)
+        todo = Todo(content=content, user_id=user_id)
         self.session.add(todo)
         self.session.commit()
         self.session.refresh(todo)

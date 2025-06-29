@@ -124,7 +124,6 @@ def test_get_user_by_id_not_found(
     response = client.get(
         "/users/999",
         headers={'Authorization': f'Bearer {token}'},
-
         ) # Um ID que provavelmente não existe
     
     assert response.status_code == 404
