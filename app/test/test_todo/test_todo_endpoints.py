@@ -1,10 +1,9 @@
 
-from fastapi.testclient import TestClient
 from sqlmodel import Session
 from app.todo.models import Todo
 
 
-def test_criar_tarefa_api(client: TestClient):
+def test_criar_tarefa_api(client):
     """
     Testa a criação de uma nova tarefa através do endpoint POST /api/todos/.
     """
@@ -21,7 +20,7 @@ def test_criar_tarefa_api(client: TestClient):
     assert data["completed"] is False
     assert "id" in data
 
-def test_ler_todas_as_tarefas_vazio(client: TestClient):
+def test_ler_todas_as_tarefas_vazio(client):
     """
     Testa a leitura de tarefas quando a base de dados está vazia.
     """
@@ -30,7 +29,7 @@ def test_ler_todas_as_tarefas_vazio(client: TestClient):
     assert response.status_code == 200
     assert response.json() == []
 
-def test_ler_todas_as_tarefas_com_dados(client: TestClient, todo_factory):
+def test_ler_todas_as_tarefas_com_dados(client, todo_factory):
     """
     Testa a leitura de tarefas depois de adicionar uma à base de dados.
     """
@@ -46,7 +45,7 @@ def test_ler_todas_as_tarefas_com_dados(client: TestClient, todo_factory):
     assert len(data) == 10
     assert data[0]["content"] == factory.content
 
-def test_ler_uma_tarefa_por_id(client: TestClient, todo_factory):
+def test_ler_uma_tarefa_por_id(client, todo_factory):
     """
     Testa a leitura de uma única tarefa pelo seu ID.
     """
@@ -58,7 +57,7 @@ def test_ler_uma_tarefa_por_id(client: TestClient, todo_factory):
     assert data["content"] == tarefa_teste.content
     assert data["id"] == tarefa_teste.id
 
-def test_ler_uma_tarefa_nao_encontrada(client: TestClient):
+def test_ler_uma_tarefa_nao_encontrada(client):
     """
     Testa a leitura de uma tarefa com um ID que não existe.
     """
@@ -66,7 +65,7 @@ def test_ler_uma_tarefa_nao_encontrada(client: TestClient):
     
     assert response.status_code == 404
 
-def test_atualizar_tarefa(client: TestClient, todo_factory):
+def test_atualizar_tarefa(client, todo_factory):
     """
     Testa a atualização de uma tarefa existente através do endpoint PUT.
     """
@@ -79,7 +78,7 @@ def test_atualizar_tarefa(client: TestClient, todo_factory):
     assert data["content"] == dados_atualizacao["content"]
     assert data["completed"] is True
 
-def test_eliminar_tarefa(client: TestClient, todo_factory, session: Session):
+def test_eliminar_tarefa(client, todo_factory, session: Session):
     """
     Testa a eliminação de uma tarefa.
     """

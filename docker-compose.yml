@@ -18,6 +18,7 @@ services:
     container_name: app_dev
     volumes:
       - ./app:/app/app
+      - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - .env
     depends_on:
