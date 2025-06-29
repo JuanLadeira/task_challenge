@@ -33,6 +33,7 @@ database.db
 *.manifest
 *.spec
 
+.postgres-data
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt

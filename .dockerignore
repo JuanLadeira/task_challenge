@@ -1,0 +1,30 @@
+# Docker
+.dockerignore
+Dockerfile
+compose/
+
+# Git
+.git
+.gitignore
+
+# Python
+.python-version
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+htmlcov/
+
+# Node
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Postgres data
+.postgres-data/
+
+# IDE
+.idea/
+.vscode/

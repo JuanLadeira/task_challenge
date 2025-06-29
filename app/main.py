@@ -6,6 +6,9 @@ from contextlib import asynccontextmanager
 from app.db import create_db_and_tables
 from app.todo import ui
 from app.todo import router
+import os
+
+
 
 ## Subscribers
 import app.todo.subscribers
@@ -15,7 +18,7 @@ from app.events import register_sqlalchemy_listeners, remove_sqlalchemy_listener
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Iniciando o processo de criação do banco de dados e tabelas...")
-    create_db_and_tables()
+    # create_db_and_tables()
 
     logger.info("Iniciando a aplicação FastAPI...")
     logger.info("Registrando listeners do SQLAlchemy...")
