@@ -24,8 +24,9 @@ class TodoService:
 
     def get_all_todos(self, user_id) -> List[Todo]:
         """Busca todas as tarefas, ordenadas por ID."""
-        todos = self.session.exec(select(Todo).where(Todo.user_id==user_id).order_by(Todo.id)).all()
-        return todos
+        if user_id:
+            return self.session.exec(select(Todo).where(Todo.user_id==user_id).order_by(Todo.id)).all()
+        return self.session.exec(select(Todo).order_by(Todo.id)).all() 
 
     def create_todo(self, content: str, user_id) -> Todo:
         """Cria uma nova tarefa."""
