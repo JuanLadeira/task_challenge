@@ -89,6 +89,7 @@ def get_user_by_id(
 def update_user(
     user_data: UserUpdate, 
     current_user: CurrentUser,
+    service: UserServiceDep
     ):
     """
     Atualiza os dados de um usuário existente.
@@ -97,11 +98,8 @@ def update_user(
     - **Retorna**: Os dados públicos do usuário atualizado.
     - **Levanta exceção 404**: Se o usuário não for encontrado.
     """
-    current_user.email = user_data.email
-    current_user.username = user_data.username
-    current_user.password = user_data.password
-    return current_user
-
+    updated_data = service.update_user(current_user.id, user_data)
+    return updated_data
 
 @router.delete(
     "/{user_id}",

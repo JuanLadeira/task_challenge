@@ -131,13 +131,12 @@ def test_get_user_by_id_not_found(
 
 def test_update_user(
         client: TestClient, 
-        user_factory,
+        user,
         token
         ):
     """
     Testa a atualização bem-sucedida de um usuário.
     """
-    user = user_factory()
     update_data = {"username": "new_username"}
     
     response = client.put(
@@ -151,31 +150,36 @@ def test_update_user(
     assert updated_user["username"] == "new_username"
     assert updated_user["email"] == user.email # O e-mail não deve ter mudado
 
-def test_update_user_not_found(
+def test_update_user_unauthozied(
         client: TestClient, 
         session: Session,
-        token,
         ):
     """
-    Testa a atualização de um usuário que não existe.
+    Testa a atualização de um usuário que não está logado.
     """
     update_data = {"username": "new_username"}
     response = client.put(
         "/users/999", 
         json=update_data,
-
         )
     
-    assert response.status_code == 404
+    assert response.status_code == 401
 
-def test_delete_user(client: TestClient, user_factory):
+def test_delete_user(
+    client: TestClient, 
+    user_factory, 
+    token
+    ):
     """
     Testa a exclusão bem-sucedida de um usuário.
     """
     user = user_factory()
     
     # Deleta o usuário
-    response_delete = client.delete(f"/users/{user.id}")
+    response_delete = client.delete(
+        f"/users/{user.id}",
+        headers={'Authorization': f'Bearer {token}'},
+        )
     assert response_delete.status_code == 204 # No Content
     
     # Tenta buscar o usuário deletado para confirmar
@@ -186,6 +190,8 @@ def test_delete_user_not_found(client: TestClient, session: Session):
     """
     Testa a exclusão de um usuário que não existe.
     """
-    response = client.delete("/users/999")
+    response = client.delete(
+        "/users/999"
+        )
     
-    assert response.status_code == 404
+    assert response.status_code == 401
