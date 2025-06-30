@@ -2,11 +2,13 @@ import factory
 from factory.alchemy import SQLAlchemyModelFactory
 from app.todo.models import Todo
 
+
 class TodoFactory(SQLAlchemyModelFactory):
     """
     Fábrica para o modelo Todo, para gerar dados de teste.
     A integração com a sessão de teste do SQLModel é feita no conftest.py.
     """
+
     class Meta:
         model = Todo
         # A sessão será injetada dinamicamente pela fixture do pytest
@@ -16,5 +18,5 @@ class TodoFactory(SQLAlchemyModelFactory):
 
     # Define como gerar valores para cada campo do modelo
     id = factory.Sequence(lambda n: n + 1)
-    content = factory.Faker('sentence', nb_words=4, locale='pt_PT')
-    completed = factory.Faker('boolean')
+    content = factory.Faker("sentence", nb_words=4, locale="pt_PT")
+    completed = factory.Faker("boolean")

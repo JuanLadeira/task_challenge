@@ -1,21 +1,12 @@
-import os
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
-from sqlalchemy.pool import StaticPool
 from app.main import app
 from app.db import get_session
-from app.test.factories.todo import TodoFactory
-from app.settings import Settings
+from app.auth.security import get_password_hash
+from app.tests.factories.todo import TodoFactory
+from app.tests.factories.users import UserFactory
 from testcontainers.postgres import PostgresContainer
-
-# --- Definição de Variáveis de Ambiente para Teste ---
-# ATENÇÃO: Isto deve ser feito ANTES de importar a sua aplicação (app.main, app.db, etc.)
-# para garantir que o Pydantic as lê no arranque.
-os.environ['SECRET_KEY'] = 'test_secret_key_for_testing_purposes'
-os.environ['ALGORITHM'] = 'HS256'
-os.environ['ACCESS_TOKEN_EXPIRE_MINUTES'] = '30'
-
 
 @pytest.fixture
 def session():
@@ -41,10 +32,33 @@ def client(session):
 
 
 @pytest.fixture
-def todo_factory(session: Session) -> type[TodoFactory]:
+def todo_factory(session) -> type[TodoFactory]:
     """
     Fixture que fornece a TodoFactory já configurada com a sessão de teste.
     """
     # Associa a fábrica à sessão de teste atual
     TodoFactory._meta.sqlalchemy_session = session
     return TodoFactory
+
+
+@pytest.fixture
+def user_factory(session) -> type[UserFactory]:
+    UserFactory._meta.sqlalchemy_session = session
+    
+    return UserFactory
+
+
+@pytest.fixture
+def user(user_factory):
+    senha = "teste"
+    user = user_factory(username="teste", password=get_password_hash(senha))
+    return user
+
+
+@pytest.fixture
+def token(client, user):
+    response = client.post(
+        '/auth/login',
+        data={'username': user.username, 'password': "teste"}
+    )
+    return response.json()['access_token']

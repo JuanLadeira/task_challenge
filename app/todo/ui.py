@@ -1,19 +1,27 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Request, Form, Path, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from app.todo.services import TodoServiceDep
-from typing import Annotated
 
+from app.todo.services import TodoServiceDep
 from app.todo.models import Todo
+from app.todo.schemas import TodoUpdate
+
 
 # Configuração do router e dos templates
 router = APIRouter(
     tags=["Interface de Tarefas (HTMX)"],
-    responses={404: {"description": "Não encontrado"}}
+    responses={404: {"description": "Não encontrado"}},
 )
 templates = Jinja2Templates(directory="app/templates")
 
-@router.get("/", response_class=HTMLResponse, summary="Busca a página HTML principal da aplicação")
+
+@router.get(
+    "/",
+    response_class=HTMLResponse,
+    summary="Busca a página HTML principal da aplicação",
+)
 def read_root(request: Request, service: TodoServiceDep):
     """
     Renderiza e retorna a página web completa (`base.html`).
@@ -26,16 +34,20 @@ def read_root(request: Request, service: TodoServiceDep):
     todos = service.get_all_todos()
     return templates.TemplateResponse("base.html", {"request": request, "todos": todos})
 
+
 @router.post(
-    "/ui/todos", 
-    response_class=HTMLResponse, 
+    "/ui/todos",
+    response_class=HTMLResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Cria uma nova tarefa e retorna a lista atualizada"
+    summary="Cria uma nova tarefa e retorna a lista atualizada",
 )
 def create_todo(
-    request: Request, 
+    request: Request,
     service: TodoServiceDep,
-    content: Annotated[str, Form(description="Conteúdo da tarefa a ser criada. Enviado como 'form data'.")]
+    content: Annotated[
+        str,
+        Form(description="Conteúdo da tarefa a ser criada. Enviado como 'form data'."),
+    ],
 ):
     """
     Cria uma nova tarefa a partir dos dados de um formulário.
@@ -47,16 +59,29 @@ def create_todo(
     """
     todo = service.create_todo(content=content)
     if not todo:
-        return HTMLResponse(status_code=status.HTTP_400_BAD_REQUEST, content="Erro ao criar a tarefa.")
-    
-    todos = service.get_all_todos()
-    return templates.TemplateResponse("todos.html", {"request": request, "todos": todos})
+        return HTMLResponse(
+            status_code=status.HTTP_400_BAD_REQUEST, content="Erro ao criar a tarefa."
+        )
 
-@router.put("/ui/todos/{todo_id}", response_class=HTMLResponse, summary="Atualiza o estado de uma tarefa")
+    todos = service.get_all_todos()
+    return templates.TemplateResponse(
+        "todos.html", {"request": request, "todos": todos}
+    )
+
+
+@router.put(
+    "/ui/todos/{todo_id}",
+    response_class=HTMLResponse,
+    summary="Atualiza o estado de uma tarefa",
+)
 def update_todo(
-    request: Request, 
+    request: Request,
     service: TodoServiceDep,
-    todo_id: Annotated[int, Path(description="O ID da tarefa que terá seu estado 'completed' alternado.")]
+    todo_id: Annotated[
+        int,
+        Path(description="O ID da tarefa que terá seu estado 'completed' alternado."),
+    ],
+    todo_data: TodoUpdate = None, 
 ):
     """
     Alterna o estado de 'concluída' para uma tarefa específica.
@@ -65,31 +90,44 @@ def update_todo(
     Após atualizar o estado da tarefa, ele retorna um **fragmento HTML** (`todos.html`)
     com a lista de tarefas atualizada, para ser usado pelo HTMX na substituição do conteúdo.
     """
-    todo = service.update_todo_status(todo_id)
+    todo = service.update_todo(todo_id, todo_data)
     if not todo:
-        return HTMLResponse(status_code=status.HTTP_404_NOT_FOUND, content="Tarefa não encontrada.")
-    
-    todos = service.get_all_todos()
-    return templates.TemplateResponse("todos.html", {"request": request, "todos": todos})
+        return HTMLResponse(
+            status_code=status.HTTP_404_NOT_FOUND, content="Tarefa não encontrada."
+        )
 
-@router.delete("/ui/todos/{todo_id}", response_class=HTMLResponse, summary="Deleta uma tarefa específica")
+    todos = service.get_all_todos()
+    return templates.TemplateResponse(
+        "todos.html", {"request": request, "todos": todos}
+    )
+
+
+@router.delete(
+    "/ui/todos/{todo_id}",
+    response_class=HTMLResponse,
+    summary="Deleta uma tarefa específica",
+)
 def delete_todo(
-    request: Request, 
+    request: Request,
     service: TodoServiceDep,
-    todo_id: Annotated[int, Path(description="O ID da tarefa a ser deletada.")]
+    todo_id: Annotated[int, Path(description="O ID da tarefa a ser deletada.")],
 ):
     """
     Remove uma tarefa do banco de dados.
 
-    Após deletar a tarefa identificada pelo ID na URL, este endpoint retorna um 
+    Após deletar a tarefa identificada pelo ID na URL, este endpoint retorna um
     **fragmento HTML** (`todos.html`) com a lista de tarefas restante. Este
     fragmento é então usado pelo cliente (HTMX) para atualizar a interface.
     """
     todo = service.session.get(Todo, todo_id)
     if not todo:
-        return HTMLResponse(status_code=status.HTTP_404_NOT_FOUND, content="Tarefa não encontrada.")
-        
+        return HTMLResponse(
+            status_code=status.HTTP_404_NOT_FOUND, content="Tarefa não encontrada."
+        )
+
     service.delete_todo_by_id(todo_id)
-    
+
     todos = service.get_all_todos()
-    return templates.TemplateResponse("todos.html", {"request": request, "todos": todos})
+    return templates.TemplateResponse(
+        "todos.html", {"request": request, "todos": todos}
+    )

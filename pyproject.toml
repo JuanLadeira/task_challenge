@@ -15,15 +15,22 @@ dependencies = [
     "python-multipart>=0.0.20",
     "sqlmodel>=0.0.24",
     "uvicorn>=0.34.3",
-    "psycopg2-binary",
     "psycopg2-binary>=2.9.10",
+    "pwdlib[argon2]>=0.2.1",
+    "pyjwt>=2.10.1",
 ]
 [tool.pytest.ini_options]
-testpaths = ["/app/tests", "tests"]
+testpaths = ["/app/tests"]
 pythonpath = "."
+markers = [
+    "users: testes de users",
+    "todos: testes de todos",
+    "auth: testes de autenticação",
+]
 
 [dependency-groups]
 dev = [
+    "freezegun>=1.5.2",
     "pytest>=8.4.1",
     "pytest-asyncio>=1.0.0",
     "pytest-cov>=6.2.1",
@@ -38,10 +45,17 @@ dev = [
 up = "docker compose -f docker-compose.yml up -d"
 down = "docker compose -f docker-compose.yml down"
 logs = "docker compose -f docker-compose.yml logs -f"
-test = "docker compose -f docker-compose.yml run --rm app /app/.venv/bin/python -m pytest"
-test-coverage = "pytest --cov=app --cov-report=term-missing --cov-report=html --cov-fail-under=90"
-test-watch = "pytest --cov=app --cov-report=term-missing --cov-report=html --cov-fail-under=90 --lf"
-test-watch-coverage = "pytest --cov=app --cov-report=term-missing --cov-report=html --cov-fail-under=90 --lf --watch"
-lint = "ruff check app tests"
-format = "ruff format app tests"
-format-check = "ruff check --fix app tests"
+test = "uv run pytest"
+test-coverage = "uv run pytest --cov=app --cov-report=term-missing --cov-report=html --cov-fail-under=90"
+lint = "uv run ruff check app"
+format = 'uv run ruff format'
+format-check = "uv run ruff check --fix app"
+pre_format = 'uv run ruff check --fix'
+pre_test = 'task lint'
+revision = "docker compose -f docker-compose.yml exec app alembic revision --autogenerate -m"
+head = "docker compose -f docker-compose.yml exec app alembic upgrade head"
+bash = "docker compose -f docker-compose.yml exec app bash"
+pysql = "docker exec -it db_dev psql -U user -d mydatabase"
+
+[tool.ruff.lint]
+ignore = ["F821"]

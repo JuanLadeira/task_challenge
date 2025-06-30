@@ -15,9 +15,10 @@ services:
     build:
       context: .
       dockerfile: compose/development/Dockerfile
+    entrypoint: ./entrypoint.sh
     container_name: app_dev
     volumes:
-      - ./app:/app/app
+      - .:/app/
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
@@ -31,3 +32,4 @@ services:
       - db
     ports:
       - "8000:8000"
+      
