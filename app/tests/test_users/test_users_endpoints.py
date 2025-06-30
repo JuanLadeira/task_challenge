@@ -181,7 +181,10 @@ def test_delete_user(
     assert response_delete.status_code == 204 # No Content
     
     # Tenta buscar o usuário deletado para confirmar
-    response_get = client.get(f"/users/{user.id}")
+    response_get = client.get(
+        f"/users/{user.id}",
+        headers={'Authorization': f'Bearer {token}'},
+        )
     assert response_get.status_code == 404
 
 def test_delete_user_unauthorized(client: TestClient, session: Session):
