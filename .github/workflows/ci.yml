@@ -27,6 +27,7 @@ jobs:
 
       - name: Install dependencies with uv
         run: |
+          uv venv
           uv pip install taskipy ruff
 
       - name: Run tests
