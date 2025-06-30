@@ -186,7 +186,7 @@ def test_delete_user(
     response_get = client.get(f"/users/{user.id}")
     assert response_get.status_code == 404
 
-def test_delete_user_not_found(client: TestClient, session: Session):
+def test_delete_user_unauthorized(client: TestClient, session: Session):
     """
     Testa a exclusão de um usuário que não existe.
     """
