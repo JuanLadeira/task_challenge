@@ -4,6 +4,8 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from app.db import SQLModel
 from app.settings import Settings
+from app.todo.models import Todo  # noqa: F401
+from app.user.models import User  # noqa: F401
 
 from alembic import context
 
