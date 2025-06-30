@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies with uv
         run: |
           uv venv
-          uv pip install taskipy ruff
+          uv add taskipy ruff
 
       - name: Run tests
         env:
@@ -39,4 +39,4 @@ jobs:
           POSTGRES_USER: user
           POSTGRES_PASSWORD: password
           POSTGRES_DB: mydatabase
-        run: task test
+        run: uv run pytest -vv
