@@ -28,9 +28,12 @@ class TodoService:
             return self.session.exec(select(Todo).where(Todo.user_id==user_id).order_by(Todo.id)).all()
         return self.session.exec(select(Todo).order_by(Todo.id)).all() 
 
-    def create_todo(self, content: str, user_id) -> Todo:
+    def create_todo(self, content: str, user_id=None) -> Todo:
         """Cria uma nova tarefa."""
-        todo = Todo(content=content, user_id=user_id)
+        if user_id:
+            todo = Todo(content=content, user_id=user_id)
+        else:
+            todo = Todo(content=content)
         self.session.add(todo)
         self.session.commit()
         self.session.refresh(todo)

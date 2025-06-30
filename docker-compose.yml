@@ -33,3 +33,11 @@ services:
     ports:
       - "8000:8000"
       
+    develop:
+      watch:
+        - action: rebuild
+          path: ./uv.lock
+        - action: rebuild
+          path: compose/development/Dockerfile
+        - action: restart
+          path: app/
