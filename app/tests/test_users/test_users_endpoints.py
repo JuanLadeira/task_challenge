@@ -168,14 +168,12 @@ def test_update_user_unauthozied(
 def test_delete_user(
     client: TestClient, 
     user_factory, 
+    user,
     token
     ):
     """
     Testa a exclusão bem-sucedida de um usuário.
     """
-    user = user_factory()
-    
-    # Deleta o usuário
     response_delete = client.delete(
         f"/users/{user.id}",
         headers={'Authorization': f'Bearer {token}'},
