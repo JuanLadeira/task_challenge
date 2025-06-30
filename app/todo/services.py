@@ -22,7 +22,7 @@ class TodoService:
         """
         self.session = session
 
-    def get_all_todos(self, user_id) -> List[Todo]:
+    def get_all_todos(self, user_id=None) -> List[Todo]:
         """Busca todas as tarefas, ordenadas por ID."""
         if user_id:
             return self.session.exec(select(Todo).where(Todo.user_id==user_id).order_by(Todo.id)).all()
