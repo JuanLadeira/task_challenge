@@ -18,7 +18,6 @@ router = APIRouter(prefix="/users", tags=["Users"])
 def create_user(
     user_data: UserCreate, 
     service: UserServiceDep, 
-    current_user:CurrentUser
     ):
     """
     Cria um novo usuário no sistema.

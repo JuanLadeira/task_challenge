@@ -58,4 +58,4 @@ bash = "docker compose -f docker-compose.yml exec app bash"
 pysql = "docker exec -it db_dev psql -U user -d mydatabase"
 
 [tool.ruff.lint]
-ignore = ["F821"]
+ignore = ["F821", "PT019"]

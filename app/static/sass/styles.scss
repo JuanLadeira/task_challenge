@@ -1,12 +1,13 @@
-$primary-color: #4a4a4a;
-$secondary-color: #f0f2f5;
-$card-bg: #ffffff;
-$shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+// Dark Theme Color Palette
+$primary-color-dark: #e0e0e0;
+$secondary-color-dark: #121212;
+$card-bg-dark: #1e1e1e;
+$shadow-dark: 0 4px 8px rgba(0, 0, 0, 0.4);
 $border-radius: 8px;
 
 body {
-  background-color: $secondary-color;
-  color: $primary-color;
+  background-color: $secondary-color-dark;
+  color: $primary-color-dark;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.6;
   margin: 0;
@@ -15,7 +16,7 @@ body {
 
 h1 {
   text-align: center;
-  color: $primary-color;
+  color: $primary-color-dark;
   margin-bottom: 40px;
 }
 
@@ -28,7 +29,7 @@ h1 {
 .todo-form {
   display: flex;
   margin-bottom: 30px;
-  box-shadow: $shadow;
+  box-shadow: $shadow-dark;
   border-radius: $border-radius;
   overflow: hidden;
 }
@@ -39,6 +40,8 @@ h1 {
   padding: 15px;
   font-size: 16px;
   outline: none;
+  background-color: $card-bg-dark;
+  color: $primary-color-dark;
 }
 
 .todo-button {
@@ -61,9 +64,9 @@ h1 {
 }
 
 .todo-card {
-  background-color: $card-bg;
+  background-color: $card-bg-dark;
   border-radius: $border-radius;
-  box-shadow: $shadow;
+  box-shadow: $shadow-dark;
   margin-bottom: 15px;
   padding: 20px;
   display: flex;
@@ -72,12 +75,12 @@ h1 {
   transition: box-shadow 0.3s ease;
 
   &:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
   }
 
   &.completed .todo-content {
     text-decoration: line-through;
-    color: #aaa;
+    color: #888;
   }
 }
 
@@ -91,11 +94,11 @@ h1 {
   background: none;
   cursor: pointer;
   padding: 5px;
-  color: #aaa;
+  color: #888;
   transition: color 0.3s ease;
 
   &:hover {
-    color: $primary-color;
+    color: $primary-color-dark;
   }
 }
 

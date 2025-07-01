@@ -1,33 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="dark">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo App</title>
     <link rel="stylesheet" href="/static/css/styles.css">
-    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
-    <!-- Google Fonts for a nicer font -->
+    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Using Inter font as the default */
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Simple transition for todo items for smoother updates */
         .todo-item {
             transition: all 0.3s ease-in-out;
         }
-        /* A little animation for when the whole list reloads */
         #todos {
             transition: opacity 0.3s ease-in-out;
         }
     </style>
 </head>
-<body>
-{% block content %}
-{% endblock content %}
+<body class="bg-white dark:bg-gray-900">
+<div>
+    {% block content %}
+    {% endblock content %}
+</div>
 
 </body>
 </html>

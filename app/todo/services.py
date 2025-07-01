@@ -39,14 +39,14 @@ class TodoService:
         self.session.refresh(todo)
         return todo
 
-    def update_todo(self, todo_id: int, todo_data: TodoUpdate) -> Todo | None:
+    def update_todo(self, todo_id: int, todo_data: TodoUpdate, user_id: int) -> Todo | None:
         """
         Encontra uma tarefa pelo ID e alterna seu estado 'completed'.
         Retorna a tarefa atualizada ou None se não for encontrada.
         """
         # 1. Busca a tarefa no banco de dados
         db_todo = self.session.get(Todo, todo_id)
-        if not db_todo:
+        if not db_todo or db_todo.user_id != user_id:
             return None
 
         # 2. Pega os dados do Pydantic model e exclui os que não foram enviados (unset)
@@ -62,13 +62,13 @@ class TodoService:
         self.session.refresh(db_todo)
         return db_todo
 
-    def delete_todo_by_id(self, todo_id: int) -> bool:
+    def delete_todo_by_id(self, todo_id: int, user_id: int) -> bool:
         """
         Deleta uma tarefa pelo seu ID.
         Retorna True se a tarefa foi deletada, False caso contrário.
         """
         todo = self.session.get(Todo, todo_id)
-        if todo:
+        if todo and todo.user_id == user_id:
             self.session.delete(todo)
             self.session.commit()
             return True
