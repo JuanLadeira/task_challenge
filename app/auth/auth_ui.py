@@ -1,6 +1,15 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form, Request, status, Cookie, HTTPException, Response
+from fastapi import (
+    APIRouter,
+    Depends,
+    Form,
+    Request,
+    status,
+    Cookie,
+    HTTPException,
+    Response,
+)
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
@@ -24,17 +33,18 @@ router = APIRouter(
 
 templates = Jinja2Templates(directory="app/templates")
 
-def get_current_user_from_cookie(service: UserServiceDep, access_token: str = Cookie(None)):
+
+def get_current_user_from_cookie(
+    service: UserServiceDep, access_token: str = Cookie(None)
+):
     if not access_token:
         return None
-    
+
     token = access_token.split(" ")[1]
 
     try:
-        payload = decode(
-            token, SECRET_KEY, algorithms=[ALGORITHM]
-        )
-        username = payload.get('sub')
+        payload = decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
 
         if not username:
             raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -46,6 +56,7 @@ def get_current_user_from_cookie(service: UserServiceDep, access_token: str = Co
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     return user
+
 
 AuthenticatedUser = Annotated[User, Depends(get_current_user_from_cookie)]
 
@@ -59,8 +70,8 @@ def get_user(user: AuthenticatedUser):
         )
     return user
 
-UserDep = Annotated[User, Depends(get_user)]
 
+UserDep = Annotated[User, Depends(get_user)]
 
 
 @router.get("/login", response_class=HTMLResponse)
@@ -70,13 +81,18 @@ async def get_login_form(request: Request):
 
 @router.post("/login")
 async def login(
-    service: UserServiceDep, 
-    request: Request, 
-    username: str = Form(...), 
+    service: UserServiceDep,
+    request: Request,
+    username: str = Form(...),
     password: str = Form(...),
-    ):
-    
-    form_data = OAuth2PasswordRequestForm(username=username, password=password, scope="", client_id=None, client_secret=None)
+):
+    form_data = OAuth2PasswordRequestForm(
+        username=username,
+        password=password,
+        scope="",
+        client_id=None,
+        client_secret=None,
+    )
     try:
         token_data = await auth_login(service, form_data)
         response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
@@ -93,12 +109,13 @@ async def login(
             status_code=400,
         )
 
+
 @router.post("/logout")
 async def logout(response: Response):
     # A maneira mais idiomática para um backend que serve HTMX
     response.delete_cookie("access_token")
     response.headers["HX-Redirect"] = "/ui/auth/login"
-    response.status_code = status.HTTP_200_OK # A resposta foi bem sucedida
+    response.status_code = status.HTTP_200_OK  # A resposta foi bem sucedida
     return response
 
 
@@ -107,4 +124,6 @@ def get_register_page(request: Request):
     """
     Serve a página HTML para criação de um novo usuário.
     """
-    return templates.TemplateResponse("components/create_user.html", {"request": request})
+    return templates.TemplateResponse(
+        "components/create_user.html", {"request": request}
+    )

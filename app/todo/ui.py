@@ -35,7 +35,9 @@ def read_root(request: Request, service: TodoServiceDep, user: UserDep):
         return templates.TemplateResponse("login.html", {"request": request})
 
     todos = service.get_all_todos(user_id=user.id)
-    return templates.TemplateResponse("base.html", {"request": request, "todos": todos, "user": user})
+    return templates.TemplateResponse(
+        "base.html", {"request": request, "todos": todos, "user": user}
+    )
 
 
 @router.post(
@@ -89,7 +91,7 @@ def update_todo(
         int,
         Path(description="O ID da tarefa que terá seu estado 'completed' alternado."),
     ],
-    todo_data: TodoUpdate = None, 
+    todo_data: TodoUpdate = None,
 ):
     """
     Alterna o estado de 'concluída' para uma tarefa específica.

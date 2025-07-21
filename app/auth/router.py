@@ -1,4 +1,3 @@
-
 from fastapi.security import OAuth2PasswordRequestForm
 
 from fastapi import HTTPException, status
@@ -15,9 +14,9 @@ router = APIRouter(
 
 @router.post("/login")
 async def login(
-    service:UserServiceDep,
+    service: UserServiceDep,
     form_data: OAuth2PasswordRequestForm = Depends(),
-    ):
+):
     """
     Endpoint to handle user login.
     It receives a username and password, validates them, and returns an access token.
@@ -30,8 +29,8 @@ async def login(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     # If the user exists and the password is correct, generate a token
-    access_token = create_access_token(data={"sub": user.username}) 
+    access_token = create_access_token(data={"sub": user.username})
 
     return {"access_token": access_token, "token_type": "bearer"}

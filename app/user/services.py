@@ -23,12 +23,12 @@ class UserService:
             session: Uma sessão do SQLModel para interagir com o banco de dados.
         """
         self.session = session
-    
+
     def get_by_id(self, user_id: int) -> Optional[User]:
         """
         Busca um usuário pelo seu ID.
         Retorna o usuário se encontrado, ou None se não existir.
-        
+
         Args:
             user_id: O ID do usuário a ser buscado.
 
@@ -43,9 +43,7 @@ class UserService:
         Busca um usuário pelo nome de usuário.
         Retorna o usuário se encontrado, ou None se não existir.
         """
-        user = self.session.exec(
-            select(User).where(User.username == username)
-        ).first()
+        user = self.session.exec(select(User).where(User.username == username)).first()
         return user
 
     def get_all_users(self) -> List[User]:
@@ -65,13 +63,13 @@ class UserService:
         """
         # Cria um dicionário com os dados do schema, excluindo a senha para tratá-la separadamente.
         user_dict = user_data.model_dump(exclude={"password"})
-        
+
         # Aplica o hash na senha antes de armazená-la.
         hashed_password = get_password_hash(user_data.password)
-        
+
         # Cria a instância do modelo User com os dados e a senha hasheada.
         db_user = User(**user_dict, password=hashed_password)
-        
+
         self.session.add(db_user)
         self.session.commit()
         self.session.refresh(db_user)

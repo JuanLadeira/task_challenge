@@ -27,4 +27,4 @@ while retries < max_retries:
         time.sleep(2)
 else:
     print("Could not connect to the database after several retries. Exiting.")
-    exit(1) # Termina com erro se não conseguir conectaior
+    exit(1)  # Termina com erro se não conseguir conectaior

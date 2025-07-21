@@ -25,8 +25,10 @@ class TodoService:
     def get_all_todos(self, user_id=None) -> List[Todo]:
         """Busca todas as tarefas, ordenadas por ID."""
         if user_id:
-            return self.session.exec(select(Todo).where(Todo.user_id==user_id).order_by(Todo.id)).all()
-        return self.session.exec(select(Todo).order_by(Todo.id)).all() 
+            return self.session.exec(
+                select(Todo).where(Todo.user_id == user_id).order_by(Todo.id)
+            ).all()
+        return self.session.exec(select(Todo).order_by(Todo.id)).all()
 
     def create_todo(self, content: str, user_id=None) -> Todo:
         """Cria uma nova tarefa."""
@@ -39,7 +41,9 @@ class TodoService:
         self.session.refresh(todo)
         return todo
 
-    def update_todo(self, todo_id: int, todo_data: TodoUpdate, user_id: int) -> Todo | None:
+    def update_todo(
+        self, todo_id: int, todo_data: TodoUpdate, user_id: int
+    ) -> Todo | None:
         """
         Encontra uma tarefa pelo ID e alterna seu estado 'completed'.
         Retorna a tarefa atualizada ou None se não for encontrada.

@@ -1,6 +1,4 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, Form, Request, Response, status
+from fastapi import APIRouter, Form, Request, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
@@ -23,8 +21,20 @@ async def get_login_form(request: Request):
 
 
 @router.post("/login")
-async def login(service: UserServiceDep, request: Request, response: Response, username: str = Form(...), password: str = Form(...)):
-    form_data = OAuth2PasswordRequestForm(username=username, password=password, scope="", client_id=None, client_secret=None)
+async def login(
+    service: UserServiceDep,
+    request: Request,
+    response: Response,
+    username: str = Form(...),
+    password: str = Form(...),
+):
+    form_data = OAuth2PasswordRequestForm(
+        username=username,
+        password=password,
+        scope="",
+        client_id=None,
+        client_secret=None,
+    )
     try:
         token_data = await auth_login(service, form_data)
         response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
@@ -34,15 +44,18 @@ async def login(service: UserServiceDep, request: Request, response: Response, u
             httponly=True,
         )
         return response
-    except Exception as e:
+    except Exception:
         return templates.TemplateResponse(
             "login.html",
             {"request": request, "error": "Invalid credentials"},
             status_code=400,
         )
 
+
 @router.post("/logout")
 async def logout(response: Response):
-    response = RedirectResponse(url="/ui/auth/login", status_code=status.HTTP_303_SEE_OTHER)
+    response = RedirectResponse(
+        url="/ui/auth/login", status_code=status.HTTP_303_SEE_OTHER
+    )
     response.delete_cookie("access_token")
     return response

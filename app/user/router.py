@@ -16,9 +16,9 @@ router = APIRouter(prefix="/users", tags=["Users"])
     summary="Criar um novo usuário",
 )
 def create_user(
-    user_data: UserCreate, 
-    service: UserServiceDep, 
-    ):
+    user_data: UserCreate,
+    service: UserServiceDep,
+):
     """
     Cria um novo usuário no sistema.
 
@@ -33,21 +33,14 @@ def create_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="O nome de usuário já está em uso.",
         )
-    
+
     # O e-mail também deve ser único, adicione uma verificação se necessário.
 
     return service.create_user(user_data=user_data)
 
 
-@router.get(
-    "/",
-    response_model=List[UserPublic],
-    summary="Listar todos os usuários"
-)
-def get_all_users(
-    service: UserServiceDep,
-    current_user:CurrentUser
-    ):
+@router.get("/", response_model=List[UserPublic], summary="Listar todos os usuários")
+def get_all_users(service: UserServiceDep, current_user: CurrentUser):
     """
     Retorna uma lista de todos os usuários cadastrados no sistema.
     """
@@ -55,15 +48,9 @@ def get_all_users(
 
 
 @router.get(
-    "/{user_id}",
-    response_model=UserPublic,
-    summary="Buscar um usuário pelo ID"
+    "/{user_id}", response_model=UserPublic, summary="Buscar um usuário pelo ID"
 )
-def get_user_by_id(
-    user_id: int, 
-    service: UserServiceDep,
-    current_user:CurrentUser
-    ):
+def get_user_by_id(user_id: int, service: UserServiceDep, current_user: CurrentUser):
     """
     Busca e retorna os dados de um usuário específico pelo seu ID.
 
@@ -80,16 +67,10 @@ def get_user_by_id(
     return user
 
 
-@router.put(
-    "/{user_id}",
-    response_model=UserPublic,
-    summary="Atualizar um usuário"
-)
+@router.put("/{user_id}", response_model=UserPublic, summary="Atualizar um usuário")
 def update_user(
-    user_data: UserUpdate, 
-    current_user: CurrentUser,
-    service: UserServiceDep
-    ):
+    user_data: UserUpdate, current_user: CurrentUser, service: UserServiceDep
+):
     """
     Atualiza os dados de um usuário existente.
 
@@ -100,16 +81,11 @@ def update_user(
     updated_data = service.update_user(current_user.id, user_data)
     return updated_data
 
+
 @router.delete(
-    "/{user_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-    summary="Deletar um usuário"
+    "/{user_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Deletar um usuário"
 )
-def delete_user(
-    user_id: int, 
-    service: UserServiceDep,
-    current_user:CurrentUser
-    ):
+def delete_user(user_id: int, service: UserServiceDep, current_user: CurrentUser):
     """
     Deleta um usuário do sistema pelo seu ID.
 
@@ -123,4 +99,3 @@ def delete_user(
         )
     # Nenhum retorno é necessário para o status 204
     return None
-
