@@ -1,5 +1,3 @@
-
-
 from http import HTTPStatus
 from typing import Annotated
 from fastapi import Depends, HTTPException
@@ -11,9 +9,7 @@ from app.settings import Settings
 
 settings = Settings()
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl='auth/token', refreshUrl='auth/refresh'
-)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token", refreshUrl="auth/refresh")
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM
@@ -25,15 +21,13 @@ def get_current_user(
 ):
     credentials_exception = HTTPException(
         status_code=HTTPStatus.UNAUTHORIZED,
-        detail='Could not validate credentials',
-        headers={'WWW-Authenticate': 'Bearer'},
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
     )
 
     try:
-        payload = decode(
-            token, SECRET_KEY, algorithms=[ALGORITHM]
-        )
-        username = payload.get('sub')
+        payload = decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
 
         if not username:
             raise credentials_exception
@@ -47,7 +41,6 @@ def get_current_user(
     user = service.get_by_username(username)
     if not user:
         raise credentials_exception
-
 
     return user
 

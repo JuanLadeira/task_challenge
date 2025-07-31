@@ -5,23 +5,25 @@ from http import HTTPStatus
 
 # from freezegun import freeze_time
 
+
 @pytest.mark.auth
 def test_login(client, user):
     response = client.post(
-        '/auth/login',
-        data={'username': user.username, 'password': "teste"},
+        "/auth/login",
+        data={"username": user.username, "password": "teste"},
     )
     token = response.json()
 
     assert response.status_code == HTTPStatus.OK
-    assert 'access_token' in token
-    assert 'token_type' in token
+    assert "access_token" in token
+    assert "token_type" in token
+
 
 @pytest.mark.auth
 def test_login_wrong_password(client, user):
     response = client.post(
-        '/auth/login',
-        data={'username': user.username, 'password': "WRONGPASSWORD"},
+        "/auth/login",
+        data={"username": user.username, "password": "WRONGPASSWORD"},
     )
     assert response.status_code == HTTPStatus.UNAUTHORIZED
 

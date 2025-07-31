@@ -8,6 +8,7 @@ from app.tests.factories.todo import TodoFactory
 from app.tests.factories.users import UserFactory
 from testcontainers.postgres import PostgresContainer
 
+
 @pytest.fixture
 def session():
     with PostgresContainer("postgres:16", driver="psycopg2") as postgres:
@@ -44,7 +45,7 @@ def todo_factory(session) -> type[TodoFactory]:
 @pytest.fixture
 def user_factory(session) -> type[UserFactory]:
     UserFactory._meta.sqlalchemy_session = session
-    
+
     return UserFactory
 
 
@@ -58,7 +59,6 @@ def user(user_factory):
 @pytest.fixture
 def token(client, user):
     response = client.post(
-        '/auth/login',
-        data={'username': user.username, 'password': "teste"}
+        "/auth/login", data={"username": user.username, "password": "teste"}
     )
-    return response.json()['access_token']
+    return response.json()["access_token"]

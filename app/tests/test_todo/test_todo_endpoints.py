@@ -2,11 +2,9 @@ import pytest
 from sqlmodel import Session
 from app.todo.models import Todo
 
+
 @pytest.mark.todos
-def test_criar_tarefa_api(
-    client,
-    token
-    ):
+def test_criar_tarefa_api(client, token):
     """
     Testa a criação de uma nova tarefa através do endpoint POST /api/todos/.
     """
@@ -15,10 +13,10 @@ def test_criar_tarefa_api(
 
     # Faz a requisição POST
     response = client.post(
-        "/api/todos/", 
+        "/api/todos/",
         json=dados_tarefa,
-        headers={'Authorization': f'Bearer {token}'},
-        )
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     # Verifica o resultado
     data = response.json()
@@ -32,26 +30,21 @@ def test_criar_tarefa_api(
 def test_ler_todas_as_tarefas_vazio(
     client,
     token,
-    ):
+):
     """
     Testa a leitura de tarefas quando a base de dados está vazia.
     """
     response = client.get(
         "/api/todos/",
-        headers={'Authorization': f'Bearer {token}'},
-        )
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     assert response.status_code == 200
     assert response.json() == []
 
 
 @pytest.mark.todos
-def test_ler_todas_as_tarefas_com_dados(
-    client, 
-    todo_factory,
-    token,
-    user
-    ):
+def test_ler_todas_as_tarefas_com_dados(client, todo_factory, token, user):
     """
     Testa a leitura de tarefas depois de adicionar uma à base de dados.
     """
@@ -62,8 +55,8 @@ def test_ler_todas_as_tarefas_com_dados(
     # Faz a requisição GET
     response = client.get(
         "/api/todos/",
-        headers={'Authorization': f'Bearer {token}'},
-        )
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     # Verifica o resultado
     data = response.json()
@@ -73,19 +66,15 @@ def test_ler_todas_as_tarefas_com_dados(
 
 
 @pytest.mark.todos
-def test_ler_uma_tarefa_por_id(
-    client, 
-    todo_factory,
-    token
-    ):
+def test_ler_uma_tarefa_por_id(client, todo_factory, token):
     """
     Testa a leitura de uma única tarefa pelo seu ID.
     """
     tarefa_teste = todo_factory(content="Fazer compras", completed=True)
     response = client.get(
         f"/api/todos/{tarefa_teste.id}",
-        headers={'Authorization': f'Bearer {token}'},
-        )
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     data = response.json()
     assert response.status_code == 200
@@ -94,37 +83,32 @@ def test_ler_uma_tarefa_por_id(
 
 
 @pytest.mark.todos
-def test_ler_uma_tarefa_nao_encontrada(
-    client, 
-    token
-    ):
+def test_ler_uma_tarefa_nao_encontrada(client, token):
     """
     Testa a leitura de uma tarefa com um ID que não existe.
     """
     response = client.get(
         "/api/todos/999",
-        headers={'Authorization': f'Bearer {token}'},
-        )
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     assert response.status_code == 404
 
 
 @pytest.mark.todos
-def test_atualizar_tarefa(
-    client, 
-    todo_factory,
-    token,
-    ):
+def test_atualizar_tarefa(client, todo_factory, token, user):
     """
     Testa a atualização de uma tarefa existente através do endpoint PUT.
     """
-    tarefa_teste = todo_factory(content="Ler um livro", completed=False)
+    tarefa_teste = todo_factory(
+        content="Ler um livro", completed=False, user_id=user.id
+    )
     dados_atualizacao = {"content": "Ler um livro de ficção", "completed": True}
     response = client.put(
-        f"/api/todos/{tarefa_teste.id}", 
+        f"/api/todos/{tarefa_teste.id}",
         json=dados_atualizacao,
-        headers={'Authorization': f'Bearer {token}'},
-        )
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     data = response.json()
     assert response.status_code == 200
@@ -133,22 +117,19 @@ def test_atualizar_tarefa(
 
 
 @pytest.mark.todos
-def test_eliminar_tarefa(
-    client, 
-    todo_factory, 
-    session: Session,
-    token
-    ):
+def test_eliminar_tarefa(client, todo_factory, session: Session, token, user):
     """
     Testa a eliminação de uma tarefa.
     """
-    tarefa_teste = todo_factory(content="Limpar a casa", completed=False)
+    tarefa_teste = todo_factory(
+        content="Limpar a casa", completed=False, user_id=user.id
+    )
 
     # Faz a requisição DELETE
     response = client.delete(
         f"/api/todos/{tarefa_teste.id}",
-        headers={'Authorization': f'Bearer {token}'},
-        )
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     # Verifica que a requisição teve sucesso
     assert response.status_code == 204  # 204 No Content
